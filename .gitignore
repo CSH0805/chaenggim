@@ -1,0 +1,23 @@
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+
+# next.js / build
+/.next/
+/out/
+/build
+*.tsbuildinfo
+next-env.d.ts
+
+# vercel
+.vercel
+
+# env (비밀 값은 절대 커밋하지 않기, 예시 파일만 포함)
+.env*
+!.env.example
+
+# misc
+.DS_Store
+*.pem
+npm-debug.log*

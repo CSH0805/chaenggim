@@ -1,0 +1,187 @@
+@import "tailwindcss";
+
+/* ───────── 종이 플래너 테마 ───────── */
+@theme {
+  --color-paper: #fbf6e9;
+  --color-paper-deep: #f3ecd8;
+  --color-line: #e6dcc3;
+  --color-ink: #2e2b27;
+  --color-ink-soft: #6f675b;
+  --color-ink-faint: #a39a8a;
+  --color-forest: #2f5d46;
+  --color-forest-dark: #234735;
+  --color-forest-soft: #e2ebe1;
+  --color-marker: #f7e48a;
+  --color-tomato: #c8553d;
+  --color-tomato-soft: #f7e1da;
+
+  --font-sans: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-hand: "Gaegu", "Pretendard Variable", cursive;
+
+  --shadow-paper: 0 1px 0 rgba(46, 43, 39, 0.06), 0 6px 18px -10px rgba(46, 43, 39, 0.35);
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background-color: var(--color-paper);
+  /* 은은한 줄노트 패턴 */
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent 31px,
+    color-mix(in srgb, var(--color-line) 70%, transparent) 31px,
+    color-mix(in srgb, var(--color-line) 70%, transparent) 32px
+  );
+  background-attachment: local;
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-tap-highlight-color: transparent;
+}
+
+::selection {
+  background: var(--color-marker);
+}
+
+:focus-visible {
+  outline: 2px dashed var(--color-forest);
+  outline-offset: 2px;
+}
+
+@layer components {
+  /* 종이 카드: 살짝 기울어진 테이프 느낌의 그림자 */
+  .paper-card {
+    @apply rounded-2xl border border-line bg-[#fffdf6] shadow-paper;
+  }
+
+  .btn-primary,
+  .btn-outline,
+  .btn-ghost,
+  .btn-danger {
+    @apply inline-flex items-center justify-center gap-1.5 rounded-xl px-4 py-2.5 text-sm font-semibold transition
+      active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-primary {
+    @apply bg-forest text-paper hover:bg-forest-dark;
+  }
+  .btn-outline {
+    @apply border-[1.5px] border-forest text-forest hover:bg-forest-soft;
+  }
+  .btn-ghost {
+    @apply text-ink-soft hover:bg-paper-deep;
+  }
+  .btn-danger {
+    @apply bg-tomato text-white hover:brightness-95;
+  }
+
+  .chip {
+    @apply inline-flex items-center gap-1 rounded-full border-[1.5px] border-line bg-[#fffdf6] px-3 py-1.5 text-sm
+      text-ink-soft transition select-none hover:border-forest/50 active:scale-95;
+  }
+  .chip[aria-pressed="true"] {
+    @apply border-forest bg-forest text-paper;
+  }
+
+  .field {
+    @apply w-full rounded-xl border-[1.5px] border-line bg-[#fffdf6] px-3.5 py-2.5 text-[15px] text-ink outline-none
+      transition placeholder:text-ink-faint focus:border-forest;
+  }
+
+  .label {
+    @apply mb-1.5 block text-sm font-semibold text-ink-soft;
+  }
+
+  /* 형광펜 밑줄 */
+  .marker {
+    background: linear-gradient(transparent 58%, var(--color-marker) 58%, var(--color-marker) 92%, transparent 92%);
+  }
+}
+
+/* ───────── 손으로 그린 체크박스 ───────── */
+.hand-check .box {
+  stroke: var(--color-ink-soft);
+  transition: stroke 0.2s;
+}
+.hand-check .tick {
+  stroke: var(--color-forest);
+  stroke-dasharray: 26;
+  stroke-dashoffset: 26;
+  transition: stroke-dashoffset 0.3s ease-out;
+}
+.hand-check[data-checked="true"] .box {
+  stroke: var(--color-forest);
+}
+.hand-check[data-checked="true"] .tick {
+  stroke-dashoffset: 0;
+}
+
+/* 체크 시 펜으로 줄 긋기 */
+.strike {
+  position: relative;
+  transition: color 0.3s;
+}
+.strike::after {
+  content: "";
+  position: absolute;
+  left: -3px;
+  top: 52%;
+  height: 2px;
+  width: 0;
+  border-radius: 2px;
+  background: var(--color-ink-soft);
+  transform: rotate(-1.2deg);
+  transition: width 0.35s ease-out;
+}
+[data-checked="true"] .strike {
+  color: var(--color-ink-faint);
+}
+[data-checked="true"] .strike::after {
+  width: calc(100% + 6px);
+}
+
+/* ───────── 애니메이션 ───────── */
+@keyframes pop-in {
+  0% { transform: scale(0.85) rotate(-3deg); opacity: 0; }
+  60% { transform: scale(1.04) rotate(1deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0); }
+}
+.animate-pop {
+  animation: pop-in 0.45s ease-out both;
+}
+
+@keyframes rise {
+  from { transform: translateY(8px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+.animate-rise {
+  animation: rise 0.35s ease-out both;
+}
+
+@keyframes confetti-fall {
+  0% { transform: translateY(-20px) rotate(0); opacity: 0; }
+  10% { opacity: 1; }
+  100% { transform: translateY(140px) rotate(320deg); opacity: 0; }
+}
+.confetti {
+  position: absolute;
+  top: 0;
+  animation: confetti-fall 1.8s ease-in forwards;
+  pointer-events: none;
+}
+
+@keyframes wiggle {
+  0%, 100% { transform: rotate(-4deg); }
+  50% { transform: rotate(4deg); }
+}
+.animate-wiggle {
+  animation: wiggle 1.2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
